@@ -91,7 +91,7 @@ export default function PokemonList() {
 									onOpen()
 								}} cursor={'pointer'}>
 									<Flex w={'32'} h={'32'} flexDir={'column'} borderWidth={'1px'} borderColor={borderColor} alignItems={'center'} m='4'>
-										<Text w='full' textAlign={'center'}>({pokemon.id}) {pokemon.name}</Text>
+										<Text w='full' textAlign={'center'}>{pokemon.id} <Text as='span' display={'inline-block'} _firstLetter={{ textTransform: 'uppercase' }}>{pokemon.name}</Text></Text>
 										<Image h='24' w={'24'} src={pokemon.sprite}/>
 									</Flex>
 								</ListItem>
