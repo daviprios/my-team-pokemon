@@ -27,12 +27,21 @@ export default function PokemonList() {
 	const [currentPokemon, setCurrentPokemon] = useState<Pokemon>({ id: '0', name: '', sprite: '' })
 	const borderColor = useMainColor('text')
 
-	function search({ limit, page }: FilterForm) {
-		setLoading(true)
-		pokemonHandler
-			.findManyPokemon({ limit, page })
-			.then(res => setPokemonList(res))
-			.finally(() => setLoading(false))
+	async function search({ limit, page, name }: FilterForm) {
+		try {
+			setLoading(true)
+
+			name
+				? setPokemonList([await pokemonHandler.findUniquePokemon(name.toLocaleLowerCase('en-US'))])
+				: setPokemonList(await pokemonHandler.findManyPokemon({ limit, page }))
+
+		} catch(err) {
+			console.log(err)
+			setPokemonList([])
+
+		} finally {
+			setLoading(false)
+		}
 	}
 
 	function setPage(page: number) {
@@ -92,7 +101,7 @@ export default function PokemonList() {
 								}} cursor={'pointer'}>
 									<Flex w={'32'} h={'32'} flexDir={'column'} borderWidth={'1px'} borderColor={borderColor} alignItems={'center'} m='4'>
 										<Text w='full' textAlign={'center'}>{pokemon.id} <Text as='span' display={'inline-block'} _firstLetter={{ textTransform: 'uppercase' }}>{pokemon.name}</Text></Text>
-										<Image h='24' w={'24'} src={pokemon.sprite}/>
+										<Image boxSize='24' src={pokemon.sprite}/>
 									</Flex>
 								</ListItem>
 							)
