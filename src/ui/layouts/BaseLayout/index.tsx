@@ -28,6 +28,7 @@ export default function BaseLayout() {
 	const { isOpen, onClose, onOpen } = useDisclosure()
 
 	const color = useMainColor('color')
+	const bg = useMainColor('bg')
 
 	return (
 		<>
@@ -44,7 +45,7 @@ export default function BaseLayout() {
 							<ColorModeSwitcher/>
 						</Flex>
 					</DrawerHeader>
-					<DrawerBody p='0'>
+					<DrawerBody p='0' bgColor={bg}>
 						<UnorderedList listStyleType={'none'} mx='0' p='2'>
 							<Item onClose={onClose} to='/'>Home</Item>
 							<Item onClose={onClose} to='/pokemon'>Pokemon</Item>
