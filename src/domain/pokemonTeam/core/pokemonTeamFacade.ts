@@ -35,9 +35,12 @@ export const pokemonTeamFacade = (pokemonTeamStorage: PokemonTeamStorage): AddPo
 	},
 
 	removePokemon(pokemonTeamManager: PokemonTeamManager, teamName: string, pokemon: Pokemon): boolean {
-		const originalLength = pokemonTeamManager[teamName].pokemons.length
-		pokemonTeamManager[teamName].pokemons.filter((storedPokemon: Pokemon) => storedPokemon !== pokemon)
-		return originalLength !== pokemonTeamManager[teamName].pokemons.length
+		const pokemons = pokemonTeamManager[teamName].pokemons
+		const originalLength = pokemons.length
+		const index = pokemons.indexOf(pokemon)
+		if(index === -1) return false
+		pokemons.splice(index, 1)
+		return originalLength !== pokemons.length
 	},
 
 	storeTeams(pokemonTeamManager: PokemonTeamManager): Promise<boolean> {

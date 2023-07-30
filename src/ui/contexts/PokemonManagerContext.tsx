@@ -39,7 +39,7 @@ function reducer(state: PokemonTeamManager, action: Action): PokemonTeamManager 
 		pokemonTeamHandler.storeTeams(state)
 		return { ...state }
 	case 'removePokemon':
-		pokemonTeamHandler.addPokemon(state, action.payload.teamName, action.payload.pokemon)
+		pokemonTeamHandler.removePokemon(state, action.payload.teamName, action.payload.pokemon)
 		pokemonTeamHandler.storeTeams(state)
 		return { ...state }
 	default:
@@ -75,10 +75,7 @@ export default function PokemonManagerContext({
 	}, [])
 
 	return (
-		<pokemonManagerContext.Provider value={{
-			state,
-			dispatch
-		}}>
+		<pokemonManagerContext.Provider value={{ state, dispatch }}>
 			{children}
 		</pokemonManagerContext.Provider>
 	)

@@ -25,7 +25,7 @@ export default function PokemonList() {
 		}
 	})
 	const { isOpen, onOpen, onClose } = useDisclosure()
-	const [currentPokemon, setCurrentPokemon] = useState<Pokemon>({ id: '0', name: '', sprite: '' })
+	const [selectedPokemon, setSelectedPokemon] = useState<Pokemon>({ id: '0', name: '', sprite: '' })
 	const borderColor = useMainColor('text')
 	const { state, dispatch } = usePokemonManagerContext()
 	const { register: registerTeam, getValues: getValuesTeam } = useForm<{ team: string }>()
@@ -99,7 +99,7 @@ export default function PokemonList() {
 						{pokemonList.map((pokemon) => {
 							return (
 								<ListItem key={pokemon.id} onClick={() => {
-									setCurrentPokemon(pokemon)
+									setSelectedPokemon(pokemon)
 									onOpen()
 								}} cursor={'pointer'}>
 									<Flex w={'32'} h={'32'} flexDir={'column'} borderWidth={'1px'} borderColor={borderColor} alignItems={'center'} m='4'>
@@ -116,11 +116,11 @@ export default function PokemonList() {
 				<ModalOverlay />
 				<ModalContent>
 					<ModalHeader>
-						{currentPokemon.id} - <Text as='span' display={'inline-block'} _firstLetter={{ textTransform: 'uppercase' }}>{currentPokemon.name}</Text>
+						{selectedPokemon.id} - <Text as='span' display={'inline-block'} _firstLetter={{ textTransform: 'uppercase' }}>{selectedPokemon.name}</Text>
 					</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody display={'flex'} justifyContent={'center'}>
-						<Image w='full' src={currentPokemon.sprite}/>
+						<Image w='full' src={selectedPokemon.sprite}/>
 					</ModalBody>
 	
 					<ModalFooter px={4}>
@@ -133,10 +133,10 @@ export default function PokemonList() {
 								))}
 							</Select>
 							<Button flexBasis={'550px'} onClick={() => {
-								dispatch({ type: 'addPokemon', payload: { pokemon: currentPokemon, teamName: getValuesTeam().team } })
+								dispatch({ type: 'addPokemon', payload: { pokemon: selectedPokemon, teamName: getValuesTeam().team } })
 								onClose()
 							}}>
-								Adicionar {currentPokemon.name} ao time
+								Adicionar {selectedPokemon.name} ao time
 							</Button>
 						</Flex>
 					</ModalFooter>
