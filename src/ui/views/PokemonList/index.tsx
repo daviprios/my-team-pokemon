@@ -5,7 +5,8 @@ import { useForm } from 'react-hook-form'
 import { AiFillCaretLeft, AiFillCaretRight } from 'react-icons/ai'
 import { useMainColor } from '@/ui/hooks/useMainColor'
 import { pokemonHandler } from '@/domain/pokemon/app/pokemonHandler'
-import { Pokemon } from '@/domain/pokemon/core/model/Pokemon'
+import { Pokemon } from '@/domain/pokemon/core/models/Pokemon'
+import { usePokemonManagerContext } from '@/ui/contexts/PokemonManagerContext'
 
 interface FilterForm {
 	page: number
@@ -26,6 +27,8 @@ export default function PokemonList() {
 	const { isOpen, onOpen, onClose } = useDisclosure()
 	const [currentPokemon, setCurrentPokemon] = useState<Pokemon>({ id: '0', name: '', sprite: '' })
 	const borderColor = useMainColor('text')
+	const { state, dispatch } = usePokemonManagerContext()
+	const { register: registerTeam, getValues: getValuesTeam } = useForm<{ team: string }>()
 
 	async function search({ limit, page, name }: FilterForm) {
 		try {
@@ -100,7 +103,7 @@ export default function PokemonList() {
 									onOpen()
 								}} cursor={'pointer'}>
 									<Flex w={'32'} h={'32'} flexDir={'column'} borderWidth={'1px'} borderColor={borderColor} alignItems={'center'} m='4'>
-										<Text w='full' textAlign={'center'}>{pokemon.id} <Text as='span' display={'inline-block'} _firstLetter={{ textTransform: 'uppercase' }}>{pokemon.name}</Text></Text>
+										<Text w='full' textAlign={'center'}>{pokemon.id} - <Text as='span' display={'inline-block'} _firstLetter={{ textTransform: 'uppercase' }}>{pokemon.name}</Text></Text>
 										<Image boxSize='24' src={pokemon.sprite}/>
 									</Flex>
 								</ListItem>
@@ -113,17 +116,29 @@ export default function PokemonList() {
 				<ModalOverlay />
 				<ModalContent>
 					<ModalHeader>
-						({currentPokemon.id}) {currentPokemon.name}
+						{currentPokemon.id} - <Text as='span' display={'inline-block'} _firstLetter={{ textTransform: 'uppercase' }}>{currentPokemon.name}</Text>
 					</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody display={'flex'} justifyContent={'center'}>
 						<Image w='full' src={currentPokemon.sprite}/>
 					</ModalBody>
 	
-					<ModalFooter>
-						<Button onClick={onClose}>
-							Adicionar {currentPokemon.name} ao time
-						</Button>
+					<ModalFooter px={4}>
+						<Flex justifyContent={'space-between'} w='full' flexShrink={1}>
+							<Select { ...registerTeam('team') } mr='2'>
+								{Object.values(state).map((pokemonTeam) => (
+									<option key={pokemonTeam.name} value={pokemonTeam.name}>
+										{pokemonTeam.name}
+									</option>
+								))}
+							</Select>
+							<Button flexBasis={'550px'} onClick={() => {
+								dispatch({ type: 'addPokemon', payload: { pokemon: currentPokemon, teamName: getValuesTeam().team } })
+								onClose()
+							}}>
+								Adicionar {currentPokemon.name} ao time
+							</Button>
+						</Flex>
 					</ModalFooter>
 				</ModalContent>
 			</Modal>

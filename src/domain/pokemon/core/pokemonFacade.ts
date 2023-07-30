@@ -1,4 +1,4 @@
-import { Pokemon } from './model/Pokemon'
+import { Pokemon } from './models/Pokemon'
 import { FindManyPokemon } from './ports/incoming/findManyPokemon'
 import { FindUniquePokemon } from './ports/incoming/findUniquePokemon'
 import { PokemonHTTP } from './ports/outgoing/pokemonHTTP'

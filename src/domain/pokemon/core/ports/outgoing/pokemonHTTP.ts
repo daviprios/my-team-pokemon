@@ -1,5 +1,5 @@
-import { Pokemon } from '../../model/Pokemon'
-import { PokemonBasicEntity } from '../../model/PokemonBasicEntity'
+import { Pokemon } from '../../models/Pokemon'
+import { PokemonBasicEntity } from '../../models/PokemonBasicEntity'
 
 export interface PokemonHTTP {
   findUniquePokemon: (nameOrId: string) => Promise<Pokemon>

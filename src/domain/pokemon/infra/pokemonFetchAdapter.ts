@@ -1,9 +1,9 @@
 import { pokemonAPIEndpoint } from '@/utils/pokemonAPIEndpoint'
 import { PokemonHTTP } from '../core/ports/outgoing/pokemonHTTP'
-import { Pokemon } from '../core/model/Pokemon'
+import { Pokemon } from '../core/models/Pokemon'
 import { PokemonEntityList } from './entities'
-import { PokemonBasicEntity } from '../core/model/PokemonBasicEntity'
-import { PokemonEntity } from '../core/model/PokemonEntity'
+import { PokemonBasicEntity } from '../core/models/PokemonBasicEntity'
+import { PokemonEntity } from '../core/models/PokemonEntity'
 
 export const pokemonFetchAdapter: PokemonHTTP = {
 	findManyPokemon: async ({
