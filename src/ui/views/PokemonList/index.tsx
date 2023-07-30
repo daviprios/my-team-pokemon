@@ -2,12 +2,10 @@ import { useEffect, useState } from 'react'
 import { Button, Flex, Image, Input, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Spinner, Text, UnorderedList, useDisclosure } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 
-import type { Pokemon } from '@/arch/models/PokemonModel'
-import { fetchHTTP } from '@/arch/driven/adapter/fetchHTTP'
-import { pokemonSearch } from '@/arch/driving/adapter/PokemonSearch'
-import { pokemonService } from '@/arch/services/PokemonService'
 import { AiFillCaretLeft, AiFillCaretRight } from 'react-icons/ai'
 import { useMainColor } from '@/ui/hooks/useMainColor'
+import { pokemonHandler } from '@/domain/pokemon/app/pokemonHandler'
+import { Pokemon } from '@/domain/pokemon/core/model/Pokemon'
 
 interface FilterForm {
 	page: number
@@ -29,10 +27,10 @@ export default function PokemonList() {
 	const [currentPokemon, setCurrentPokemon] = useState<Pokemon>({ id: '0', name: '', sprite: '' })
 	const borderColor = useMainColor('text')
 
-	function search({ limit, name, page }: FilterForm) {
+	function search({ limit, page }: FilterForm) {
 		setLoading(true)
-		pokemonService(pokemonSearch(fetchHTTP))
-			.findManyPokemon({ limit, page, name })
+		pokemonHandler
+			.findManyPokemon({ limit, page })
 			.then(res => setPokemonList(res))
 			.finally(() => setLoading(false))
 	}
