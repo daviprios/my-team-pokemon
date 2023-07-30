@@ -52,23 +52,23 @@ export default function PokemonList() {
 				<Flex justifyContent={'center'} my='8' wrap={'wrap'} gap={'4'}>
 					<Flex>
 						<Flex mr='4'>
-							<Input {...register('name')}/>
+							<Input {...register('name')} borderColor={borderColor}/>
 						</Flex>
 					</Flex>
 					<Flex>
 						<Flex alignItems={'baseline'} mr='4'>
-							<Button px='0' disabled={isLoading} onClick={() => getValues().page > 1 && setPage(getValues().page - 1)}>
+							<Button px='0' borderWidth={1} borderColor={borderColor} disabled={isLoading} onClick={() => getValues().page > 1 && setPage(getValues().page - 1)}>
 								<AiFillCaretLeft/>
 							</Button>
 							<Text h='full' px='3'>
 								{getValues().page}
 							</Text>
-							<Button px='0' disabled={isLoading} onClick={() => setPage(getValues().page + 1)}>
+							<Button px='0' borderWidth={1} borderColor={borderColor} disabled={isLoading} onClick={() => setPage(getValues().page + 1)}>
 								<AiFillCaretRight/>
 							</Button>
 						</Flex>
 						<Flex>
-							<Select {...register('limit')}>
+							<Select {...register('limit')} borderColor={borderColor}>
 								<option value={10}>10</option>
 								<option value={20}>20</option>
 								<option value={50}>50</option>
@@ -77,7 +77,7 @@ export default function PokemonList() {
 						</Flex>
 					</Flex>
 					<Flex ml='4'>
-						<Button type='submit'>
+						<Button type='submit' borderWidth={1} borderColor={borderColor}>
 							Procurar
 						</Button>
 					</Flex>
