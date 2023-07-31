@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Button, Center, Flex, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, UnorderedList, useDisclosure } from '@chakra-ui/react'
+import { Box, Button, Center, Container, Flex, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, UnorderedList, useColorModeValue, useDisclosure } from '@chakra-ui/react'
 import { FaPlus } from 'react-icons/fa'
 import { useForm } from 'react-hook-form'
 
@@ -14,13 +14,15 @@ export default function MyTeams() {
 	const { isOpen, onOpen, onClose } = useDisclosure()
 	const [selectedPokemon, setSelectedPokemon] = useState<{ pokemon: Pokemon, team: string }>({ pokemon: { id: '0', name: '', sprite: '' }, team: '' })
 
+	const imageBgColor = useColorModeValue('gray.300', 'gray.600')
+
 	return (
-		<Flex flexDirection={'column'} p='2'>
+		<Container maxW={'2xl'} mt='4'>
 			<Flex mb='4'>
 				<Input { ...register('teamName') } mx='1' flexShrink={1} borderColor={borderColor} placeholder='Nome do time novo'/>
 				<Button flexBasis={'350px'} borderWidth={1} borderColor={borderColor} onClick={() => dispatch({ type: 'createTeam', payload: { teamName: getValues().teamName } })}>
 					<FaPlus style={{ marginRight: '2' }}/>
-					Criar um novo time
+					Criar time
 				</Button>
 			</Flex>
 			{Object.entries(state).length ? (
@@ -32,11 +34,11 @@ export default function MyTeams() {
 									<Text>{pokemonTeam.name}</Text>
 									<Button h='full' borderWidth={1} borderColor={borderColor} onClick={() => dispatch({ type: 'deleteTeam', payload: { teamName: pokemonTeam.name } })}>Excluir</Button>
 								</Flex>
-								<Flex>
+								<Flex px='1' justifyContent={'space-evenly'}>
 									{pokemonTeam.pokemons.length
 										?  pokemonTeam.pokemons.map((pokemon, index) => {
 											return (
-												<Image key={index} src={pokemon.sprite} boxSize={'16%'} onClick={() => {
+												<Image key={index} src={pokemon.sprite} boxSize={'16%'} title={pokemon.name} cursor={'pointer'} bgColor={imageBgColor} borderRadius={'lg'} onClick={() => {
 													setSelectedPokemon({ pokemon, team: pokemonTeam.name })
 													onOpen()
 												}}/>
@@ -74,6 +76,6 @@ export default function MyTeams() {
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
-		</Flex>
+		</Container>
 	)
 }
