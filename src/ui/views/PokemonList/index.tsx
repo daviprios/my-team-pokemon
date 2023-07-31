@@ -17,7 +17,7 @@ interface FilterForm {
 export default function PokemonList() {
 	const [pokemonList, setPokemonList] = useState<Pokemon[]>([])
 	const [isLoading, setLoading] = useState(false)
-	const { register, handleSubmit, getValues, setValue } = useForm<FilterForm>({
+	const { register, getValues, setValue } = useForm<FilterForm>({
 		values: {
 			page: 1,
 			limit: 10,
@@ -34,6 +34,8 @@ export default function PokemonList() {
 		try {
 			setLoading(true)
 
+			console.log(limit, page, name, getValues())
+
 			name
 				? setPokemonList([await pokemonHandler.findUniquePokemon(name.toLocaleLowerCase('en-US'))])
 				: setPokemonList(await pokemonHandler.findManyPokemon({ limit, page }))
@@ -47,52 +49,48 @@ export default function PokemonList() {
 		}
 	}
 
-	function setPage(page: number) {
-		setValue('page', page)
-		search({ limit: getValues().limit, name: getValues().name, page: getValues().page })
-	}
+	const basicSearch = () => search({ limit: getValues().limit, name: getValues().name, page: getValues().page })
 
-	useEffect(() => {
-		search({ limit: getValues().limit, name: getValues().name, page: getValues().page })
-	}, [])
+	useEffect(() => { basicSearch() }, [])
 
 	return (
 		<Flex flexDir={'column'}>
-			<form onSubmit={handleSubmit(search)}>
-				<Flex justifyContent={'center'} my='8' wrap={'wrap'} gap={'4'}>
-					<Flex>
-						<Flex mr='4'>
-							<Input {...register('name')} placeholder='Procurando alguem?' borderColor={borderColor}/>
-						</Flex>
-					</Flex>
-					<Flex>
-						<Flex alignItems={'baseline'} mr='4'>
-							<Button px='0' borderWidth={1} borderColor={borderColor} disabled={isLoading} onClick={() => getValues().page > 1 && setPage(getValues().page - 1)}>
-								<AiFillCaretLeft/>
-							</Button>
-							<Text h='full' px='3'>
-								{getValues().page}
-							</Text>
-							<Button px='0' borderWidth={1} borderColor={borderColor} disabled={isLoading} onClick={() => setPage(getValues().page + 1)}>
-								<AiFillCaretRight/>
-							</Button>
-						</Flex>
-						<Flex>
-							<Select {...register('limit')} borderColor={borderColor}>
-								<option value={10}>10</option>
-								<option value={20}>20</option>
-								<option value={50}>50</option>
-								<option value={100}>100</option>
-							</Select>
-						</Flex>
-					</Flex>
-					<Flex ml='4'>
-						<Button type='submit' borderWidth={1} borderColor={borderColor}>
-							Procurar
-						</Button>
+			<Flex justifyContent={'center'} my='8' wrap={'wrap'} gap={'4'}>
+				<Flex>
+					<Flex mx='2'>
+						<Input {...register('name')} placeholder='Procurando alguem?' borderColor={borderColor}/>
 					</Flex>
 				</Flex>
-			</form>
+				<Flex>
+					<Flex alignItems={'baseline'} mr='4'>
+						<Button px='0' borderWidth={1} borderColor={borderColor} disabled={isLoading} onClick={() => {
+							getValues().page > 1 && setValue('page', getValues().page - 1)
+							basicSearch()
+						}}>
+							<AiFillCaretLeft/>
+						</Button>
+						<Text h='full' px='3'>
+							{getValues().page}
+						</Text>
+						<Button px='0' borderWidth={1} borderColor={borderColor} disabled={isLoading} onClick={() => {
+							setValue('page', getValues().page + 1)
+							basicSearch()
+						}}>
+							<AiFillCaretRight/>
+						</Button>
+					</Flex>
+					<Flex>
+						<Select {...register('limit')} onChange={(e) => {
+							search({ limit: Number(e.target.value), name: getValues().name, page: getValues().page })
+						}} borderColor={borderColor}>
+							<option value={10}>10</option>
+							<option value={20}>20</option>
+							<option value={50}>50</option>
+							<option value={100}>100</option>
+						</Select>
+					</Flex>
+				</Flex>
+			</Flex>
 			<Flex justifyContent={'center'}>
 				{isLoading ? <Spinner /> : pokemonList.length ?
 					<UnorderedList listStyleType={'none'} display={'flex'} flexWrap={'wrap'} m='0' justifyContent={'center'}>
