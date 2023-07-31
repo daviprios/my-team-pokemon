@@ -37,7 +37,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "lint": "eslint --ext .tsx,ts"
+    "lint": "eslint --ext .tsx,ts",
+    "docker:build": "docker build -t my-team-pokemon .",
+    "docker:run": "docker run -p 80:80 my-team-pokemon"
   },
   "eslintConfig": {
     "extends": "react-app"
