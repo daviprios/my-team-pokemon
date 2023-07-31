@@ -24,9 +24,10 @@ type Action = {
 function reducer(state: PokemonTeamManager, action: Action): PokemonTeamManager {
 	switch(action.type) {
 	case 'startup':
-		pokemonTeamHandler.storeTeams(state)
+		pokemonTeamHandler.storeTeams(action.payload)
 		return action.payload
 	case 'createTeam':
+		if(!action.payload.teamName) return state
 		pokemonTeamHandler.createTeam(state, action.payload.teamName)
 		pokemonTeamHandler.storeTeams(state)
 		return { ...state }
