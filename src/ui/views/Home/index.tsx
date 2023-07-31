@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Center, Text,  } from '@chakra-ui/react'
+import { Center, Flex, Text } from '@chakra-ui/react'
 import Xarrow, { anchorType } from 'react-xarrows'
 
 export default function Home() {
@@ -13,16 +13,26 @@ export default function Home() {
 	}, [])
 
 	return (
-		<Center minH='full' position={'relative'}>
+		<Center minH='full' position={'relative'} display={'flex'} flexDir={'column'}>
 			<div id={'arrowEndAnchorRef'} style={{
 				position: 'absolute',
 				top: 0,
 				left: '30px'
 			}}></div>
 			<Xarrow start={'arrowStartAnchorRef'} end={'arrowEndAnchorRef'} startAnchor={anchorDirection} endAnchor={{ position: 'bottom', offset: { y: 5 }}} dashness={{ strokeLen: 7, nonStrokeLen: 12 }} headSize={5} color='red'/>
-			<Text id={'arrowStartAnchorRef'} px='4' textAlign={'center'} ref={arrowStartAnchorRef}>
-				Vamos criar nosso time? Basta ir na seção Meus Times.
-			</Text>
+			<Text id={'arrowStartAnchorRef'} mb='8'>Siga a seta para abrir o menu</Text>
+			<Flex px='4' flexDir={'column'} mb='4' textAlign={'center'} ref={arrowStartAnchorRef}>
+				<Text textAlign={'center'} mb='3'>
+					Tem duvida do que fazer? Vamos a um passo a passo simples:
+				</Text>
+				<Text textAlign={'center'} mb='3'>
+					Crie um novo time pokemon (você pode criar vários) na seção {'"Meu Time"'}.
+					Depois vá até a seção {'"Pokemon'} para adicionar até 6 Pokemons aos times.
+				</Text>
+				<Text textAlign={'center'}>
+					Para adicionar ou remover Pokemons basta seleciona-los clicando.
+				</Text>
+			</Flex>
 		</Center>
 	)
 }
