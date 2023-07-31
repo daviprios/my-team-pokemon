@@ -1,33 +1,38 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Flex, Image, Input, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Spinner, Text, UnorderedList, useDisclosure } from '@chakra-ui/react'
+import { Box, Button, Center, Flex, Image, Input, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Spinner, Text, UnorderedList, useDisclosure } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 
-import { AiFillCaretLeft, AiFillCaretRight } from 'react-icons/ai'
 import { useMainColor } from '@/ui/hooks/useMainColor'
 import { pokemonHandler } from '@/domain/pokemon/app/pokemonHandler'
 import { Pokemon } from '@/domain/pokemon/core/models/Pokemon'
 import { usePokemonManagerContext } from '@/ui/contexts/PokemonManagerContext'
 import { PokemonTeam } from '@/domain/pokemonTeam/core/models/PokemonTeam'
-import { roundToNearestFloor } from '@/utils/roundToOneOf'
+import { FaArrowUp } from 'react-icons/fa'
 
-interface FilterForm {
-	page: number
-	limit: number
-	name?: string
+function PokemonCard({ pokemon, onClick }: { pokemon: Pokemon, onClick: () => void }) {
+	const borderColor = useMainColor('text')
+
+	return (
+		<ListItem onClick={onClick} cursor={'pointer'}>
+			<Flex w={'32'} h={'32'} flexDir={'column'} borderWidth={'1px'} borderColor={borderColor} alignItems={'center'} m='4' borderRadius={'md'}>
+				<Text w='full' textAlign={'center'}>{pokemon.id} - <Text as='span' display={'inline-block'} _firstLetter={{ textTransform: 'uppercase' }}>{pokemon.name}</Text></Text>
+				<Image boxSize='24' src={pokemon.sprite}/>
+			</Flex>
+		</ListItem>
+	)
 }
 
 export default function PokemonList() {
-	const [pokemonList, setPokemonList] = useState<Pokemon[]>([])
+	const [pokemonSearchList, setPokemonSearchList] = useState<Pokemon[]>([])
+	const [singlePokemonSearch, setSinglePokemonSearch] = useState<Pokemon | null>(null)
 	const [isLoading, setLoading] = useState(false)
-	const { register, getValues, setValue } = useForm<FilterForm>({
-		values: {
-			page: 1,
-			limit: 10
-		}
-	})
+	const baseSearchLimit = ((window.screen.width * window.screen.height) / (200 * 200))
+
+	const pokemonListRef = useRef<HTMLUListElement>(null)
+
 	const { isOpen, onOpen, onClose } = useDisclosure()
 	const [selectedPokemon, setSelectedPokemon] = useState<Pokemon>({ id: '0', name: '', sprite: '' })
-	const borderColor = useMainColor('text')
+
 	const { state, dispatch } = usePokemonManagerContext()
 	const { register: registerTeam, getValues: getValuesTeam, setValue: setValuesTeam } = useForm<{ team: string }>()
 	const pokemonAutocompleteListRef = useRef<HTMLDataListElement>(null)
@@ -38,36 +43,87 @@ export default function PokemonList() {
 	), [])
 	const [pokemonTeams, setPokemonTeams] = useState<PokemonTeam[]>([])
 	const isNoneTeamAvailable = pokemonTeams.every((pokemonTeam) => pokemonTeam.pokemons.length >= 6)
+		
+	const bgColor = useMainColor('bg')
+	const borderColor = useMainColor('text')
 
-	async function search({ limit, page, name }: FilterForm) {
+	const [scrollPosition, setScrollPosition] = useState(0)
+	const handleScroll = () => {
+		const position = window.scrollY
+		setScrollPosition(position)
+	}
+
+	useEffect(() => {
+		window.addEventListener('scroll', handleScroll, { passive: true })
+
+		return () => {
+			window.removeEventListener('scroll', handleScroll)
+		}
+	}, [])
+
+	async function searchSinglePokemon({ name }: { name: string }) {
 		try {
 			setLoading(true)
-
-			name
-				? setPokemonList([await pokemonHandler.findUniquePokemon(name.toLocaleLowerCase('en-US'))])
-				: setPokemonList(await pokemonHandler.findManyPokemon({ limit, page }))
+			return await pokemonHandler.findUniquePokemon(name)
 
 		} catch(err) {
 			console.log(err)
-			setPokemonList([])
+			setSinglePokemonSearch(null)
 
 		} finally {
 			setLoading(false)
 		}
 	}
 
-	const basicSearch = () => search({ limit: getValues().limit, page: getValues().page })
+	async function searchManyPokemon({ limit, offset }: { limit: number, offset: number }) {
+		try {
+			setLoading(true)
+			return await pokemonHandler.findManyPokemon({ limit, offset })
+			
+		} catch(err) {
+			console.log(err)
+			setPokemonSearchList([])
 
+		} finally {
+			setLoading(false)
+		}
+	}
+	
 	useEffect(() => {
-		const { width, height } = window.screen
-		setValue('limit', roundToNearestFloor(((width * height) / (200 * 200)), [10, 20, 50, 100]))
-
-		basicSearch()
+		searchManyPokemon({ limit: baseSearchLimit, offset: 0 })
+			.then(pokemonList => setPokemonSearchList(list => [...list, ...(pokemonList ?? [])]))
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	useEffect(() => {
 		setPokemonTeams(Object.values(state))
 	}, [state])
+
+	useEffect(() => {
+		let infiniteSearching = false
+
+		function infiniteSearch() {
+			if(isSearchingSinglePokemon || infiniteSearching || isLoading) return
+			infiniteSearching = true
+	
+			const listBottom = pokemonListRef.current?.getBoundingClientRect().bottom
+			const windowInnerHeight = window.innerHeight
+	
+			if(listBottom && Math.abs(windowInnerHeight - listBottom) < 10) {
+
+				searchManyPokemon({ limit: baseSearchLimit, offset: pokemonSearchList.length })
+					.then(pokemonList => {
+						setPokemonSearchList(list => {
+							return [...list, ...(pokemonList ?? [])]
+						})
+					})
+					.finally(() => infiniteSearching = false)
+			} else infiniteSearching = false
+		}
+
+		window.addEventListener('scroll', infiniteSearch)
+		return(() => window.removeEventListener('scroll', infiniteSearch))
+	}, [baseSearchLimit, isLoading, isSearchingSinglePokemon, pokemonSearchList.length])
 
 	return (
 		<Flex flexDir={'column'}>
@@ -75,12 +131,12 @@ export default function PokemonList() {
 				<Flex>
 					<Flex mx='2'>
 						<Input onChange={(e) => {
-							if(pokemonAutocompleteListRef.current?.options.namedItem(String(e.target.value).toLocaleLowerCase('en-US'))) {
-								search({ limit: 1, name: e.target.value, page: 1 })
-								setValue('page', 1)
+							const pokemonName = String(e.target.value).toLocaleLowerCase('en-US')
+							if(pokemonAutocompleteListRef.current?.options.namedItem(pokemonName)) {
+								searchSinglePokemon({ name: pokemonName }).then(pokemon => pokemon && setSinglePokemonSearch(pokemon))
 								setIsSearchingSinglePokemon(true)
 							} else if(isSearchingSinglePokemon) {
-								basicSearch()
+								setSinglePokemonSearch(null)
 								setIsSearchingSinglePokemon(false)
 							}
 						}} placeholder='Procurando alguem?' borderColor={borderColor} list={'pokemonList'}/>
@@ -91,54 +147,37 @@ export default function PokemonList() {
 						</datalist>
 					</Flex>
 				</Flex>
-				<Flex>
-					<Flex alignItems={'baseline'} mr='4'>
-						<Button px='0' borderWidth={1} borderColor={borderColor} disabled={isLoading} onClick={() => {
-							getValues().page > 1 && setValue('page', getValues().page - 1)
-							basicSearch()
-						}}>
-							<AiFillCaretLeft/>
-						</Button>
-						<Text h='full' px='3'>
-							{getValues().page}
-						</Text>
-						<Button px='0' borderWidth={1} borderColor={borderColor} disabled={isLoading} onClick={() => {
-							setValue('page', getValues().page + 1)
-							basicSearch()
-						}}>
-							<AiFillCaretRight/>
-						</Button>
-					</Flex>
-					<Flex>
-						<Select {...register('limit')} onChange={(e) => {
-							search({ limit: Number(e.target.value), page: getValues().page })
-						}} borderColor={borderColor}>
-							<option value={10}>10</option>
-							<option value={20}>20</option>
-							<option value={50}>50</option>
-							<option value={100}>100</option>
-						</Select>
-					</Flex>
-				</Flex>
 			</Flex>
 			<Flex justifyContent={'center'}>
-				{isLoading ? <Spinner /> : pokemonList.length ?
-					<UnorderedList listStyleType={'none'} display={'flex'} flexWrap={'wrap'} m='0' justifyContent={'center'}>
-						{pokemonList.map((pokemon) => {
-							return (
-								<ListItem key={pokemon.id} onClick={() => {
-									setSelectedPokemon(pokemon)
-									onOpen()
-								}} cursor={'pointer'}>
-									<Flex w={'32'} h={'32'} flexDir={'column'} borderWidth={'1px'} borderColor={borderColor} alignItems={'center'} m='4' borderRadius={'md'}>
-										<Text w='full' textAlign={'center'}>{pokemon.id} - <Text as='span' display={'inline-block'} _firstLetter={{ textTransform: 'uppercase' }}>{pokemon.name}</Text></Text>
-										<Image boxSize='24' src={pokemon.sprite}/>
-									</Flex>
-								</ListItem>
-							)
-						})}
-					</UnorderedList>
-					: <Flex><Text>Nenhum Pokemon encontrado</Text></Flex>}
+				{<UnorderedList listStyleType={'none'} display={'flex'} flexWrap={'wrap'} m='0' justifyContent={'center'} ref={pokemonListRef}>
+					{(isSearchingSinglePokemon && singlePokemonSearch)
+						? (
+							<PokemonCard key={singlePokemonSearch.id} pokemon={singlePokemonSearch} onClick={() => {
+								setSelectedPokemon(singlePokemonSearch)
+								onOpen()
+							}}/>
+						)
+						: (
+							pokemonSearchList.map((pokemon) => {
+								return (
+									<PokemonCard key={pokemon.id} pokemon={pokemon} onClick={() => {
+										setSelectedPokemon(pokemon)
+										onOpen()
+									}}/>
+								)
+							})
+						)}
+				</UnorderedList>}
+				{scrollPosition > 500 && (
+					<Box position='fixed' bottom='20px' right={['16px', '84px']} zIndex={1} onClick={() => window.scrollTo(0, 0)} borderRadius={'full'}
+						borderWidth={1} borderColor={borderColor} bgColor={bgColor} textColor={borderColor} p='4' cursor={'pointer'}
+					>
+						<FaArrowUp/>
+					</Box>
+				)}
+			</Flex>
+			<Flex justifyContent={'center'}>
+				{isLoading && <Center py='4'><Spinner /></Center>}
 			</Flex>
 			<Modal isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />

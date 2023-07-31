@@ -8,13 +8,13 @@ export const pokemonFacade = (pokemonHTTP: PokemonHTTP): FindManyPokemon & FindU
 	findAllPokemon: async () => {
 		return await pokemonHTTP.findManyPokemon({
 			limit: 9999,
-			page: 1
+			offset: 0
 		})
 	},
 
 	findManyPokemon: async (filter: {
     limit: number
-    page: number
+    offset: number
   }) => {
 		const pokemons = await pokemonHTTP.findManyPokemon(filter)
 		return Promise.all(pokemons.map(async (pokemon): Promise<Pokemon> => {

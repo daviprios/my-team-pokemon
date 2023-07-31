@@ -3,5 +3,5 @@ import { PokemonBasicEntity } from '../../models/PokemonBasicEntity'
 
 export interface PokemonHTTP {
   findUniquePokemon: (nameOrId: string) => Promise<Pokemon>
-  findManyPokemon: (filter: { limit: number, page: number }) => Promise<PokemonBasicEntity[]>
+  findManyPokemon: (filter: { limit: number, offset: number }) => Promise<PokemonBasicEntity[]>
 }

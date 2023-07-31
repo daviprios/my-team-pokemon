@@ -8,12 +8,12 @@ import { PokemonEntity } from '../core/models/PokemonEntity'
 export const pokemonFetchAdapter: PokemonHTTP = {
 	findManyPokemon: async ({
 		limit,
-		page
+		offset
 	}: {
 		limit: number
-		page: number
+		offset: number
 	}): Promise<PokemonBasicEntity[]> => {
-		const res = await fetch(`${pokemonAPIEndpoint}/pokemon?offset=${(page - 1) * limit}&limit=${limit}`)
+		const res = await fetch(`${pokemonAPIEndpoint}/pokemon?offset=${offset}&limit=${limit}`)
 		const pokemonList = await res.json() as PokemonEntityList
 		return pokemonList.results.map((pokemon) => ({
 			name: pokemon.name,

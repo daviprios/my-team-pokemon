@@ -12,17 +12,6 @@ export default function Home() {
 			: { position: 'left', offset: { x: -10 }})
 	}, [])
 
-	useEffect(() => {
-		const updateDirection = () => {
-			setAnchorDirection((window.screen.width - 100 < (arrowStartAnchorRef.current?.getBoundingClientRect().width ?? 0))
-				? { position: 'top', offset: { y: -5 }}
-				: { position: 'left', offset: { x: -10 }})
-		}
-		window.addEventListener('resize', updateDirection)
-
-		return(() => window.removeEventListener('resize', updateDirection))
-	}, [window.screen.width])
-
 	return (
 		<Center minH='full' position={'relative'}>
 			<div id={'arrowEndAnchorRef'} style={{
