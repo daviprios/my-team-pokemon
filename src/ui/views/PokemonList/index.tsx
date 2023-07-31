@@ -75,7 +75,7 @@ export default function PokemonList() {
 				<Flex>
 					<Flex mx='2'>
 						<Input onChange={(e) => {
-							if(pokemonAutocompleteListRef.current?.options.namedItem(e.target.value)) {
+							if(pokemonAutocompleteListRef.current?.options.namedItem(String(e.target.value).toLocaleLowerCase('en-US'))) {
 								search({ limit: 1, name: e.target.value, page: 1 })
 								setValue('page', 1)
 								setIsSearchingSinglePokemon(true)
