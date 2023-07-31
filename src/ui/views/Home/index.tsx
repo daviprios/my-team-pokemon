@@ -32,7 +32,7 @@ export default function Home() {
 			}}></div>
 			<Xarrow start={'arrowStartAnchorRef'} end={'arrowEndAnchorRef'} startAnchor={anchorDirection} endAnchor={{ position: 'bottom', offset: { y: 5 }}} dashness={{ strokeLen: 7, nonStrokeLen: 12 }} headSize={5} color='red'/>
 			<Text id={'arrowStartAnchorRef'} px='4' textAlign={'center'} ref={arrowStartAnchorRef}>
-				Vamos criar nosso time? Basta ir na seção Pokemon.
+				Vamos criar nosso time? Basta ir na seção Meus Times.
 			</Text>
 		</Center>
 	)

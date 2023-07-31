@@ -62,7 +62,7 @@ export default function PokemonList() {
 				<Flex justifyContent={'center'} my='8' wrap={'wrap'} gap={'4'}>
 					<Flex>
 						<Flex mr='4'>
-							<Input {...register('name')} borderColor={borderColor}/>
+							<Input {...register('name')} placeholder='Procurando alguem?' borderColor={borderColor}/>
 						</Flex>
 					</Flex>
 					<Flex>
@@ -102,7 +102,7 @@ export default function PokemonList() {
 									setSelectedPokemon(pokemon)
 									onOpen()
 								}} cursor={'pointer'}>
-									<Flex w={'32'} h={'32'} flexDir={'column'} borderWidth={'1px'} borderColor={borderColor} alignItems={'center'} m='4'>
+									<Flex w={'32'} h={'32'} flexDir={'column'} borderWidth={'1px'} borderColor={borderColor} alignItems={'center'} m='4' borderRadius={'md'}>
 										<Text w='full' textAlign={'center'}>{pokemon.id} - <Text as='span' display={'inline-block'} _firstLetter={{ textTransform: 'uppercase' }}>{pokemon.name}</Text></Text>
 										<Image boxSize='24' src={pokemon.sprite}/>
 									</Flex>
@@ -127,7 +127,7 @@ export default function PokemonList() {
 						<Flex justifyContent={'space-between'} w='full' flexShrink={1}>
 							<Select { ...registerTeam('team') } mr='2'>
 								{Object.values(state).map((pokemonTeam) => (
-									<option key={pokemonTeam.name} value={pokemonTeam.name}>
+									<option key={pokemonTeam.name} value={pokemonTeam.name} disabled={pokemonTeam.pokemons.length >= 6}>
 										{pokemonTeam.name}
 									</option>
 								))}
@@ -135,7 +135,7 @@ export default function PokemonList() {
 							<Button flexBasis={'550px'} onClick={() => {
 								dispatch({ type: 'addPokemon', payload: { pokemon: selectedPokemon, teamName: getValuesTeam().team } })
 								onClose()
-							}}>
+							}} disabled={Object.values(state).every((pokemonTeam) => pokemonTeam.pokemons.length >= 6)}>
 								Adicionar {selectedPokemon.name} ao time
 							</Button>
 						</Flex>

@@ -4,24 +4,21 @@ import { FaPlus } from 'react-icons/fa'
 import { useForm } from 'react-hook-form'
 
 import { useMainColor } from '@/ui/hooks/useMainColor'
-import { usePokemonManagerContext } from '@/ui/contexts/PokemonManagerContext'
 import { Pokemon } from '@/domain/pokemon/core/models/Pokemon'
+import { usePokemonManagerContext } from '@/ui/contexts/PokemonManagerContext'
 
 export default function MyTeams() {
 	const { register, getValues } = useForm<{ teamName: string }>()
 	const { dispatch, state } = usePokemonManagerContext()
 	const borderColor = useMainColor('text')
 	const { isOpen, onOpen, onClose } = useDisclosure()
-	const [selectedPokemon, setSelectedPokemon] = useState<{ pokemon: Pokemon, team: string }>({
-		pokemon: { id: '0', name: '', sprite: '' },
-		team: ''
-	})
+	const [selectedPokemon, setSelectedPokemon] = useState<{ pokemon: Pokemon, team: string }>({ pokemon: { id: '0', name: '', sprite: '' }, team: '' })
 
 	return (
 		<Flex flexDirection={'column'} p='2'>
 			<Flex mb='4'>
-				<Input { ...register('teamName') } mx='1' flexShrink={1}/>
-				<Button flexBasis={'350px'} onClick={() => dispatch({ type: 'createTeam', payload: { teamName: getValues().teamName } })}>
+				<Input { ...register('teamName') } mx='1' flexShrink={1} borderColor={borderColor} placeholder='Nome do time novo'/>
+				<Button flexBasis={'350px'} borderWidth={1} borderColor={borderColor} onClick={() => dispatch({ type: 'createTeam', payload: { teamName: getValues().teamName } })}>
 					<FaPlus style={{ marginRight: '2' }}/>
 					Criar um novo time
 				</Button>
@@ -30,20 +27,24 @@ export default function MyTeams() {
 				<UnorderedList m='0'>
 					{Object.values(state).map((pokemonTeam) => {
 						return (
-							<Box key={pokemonTeam.name} borderWidth={1} borderColor={borderColor} minH='28' mb='4'>
+							<Box key={pokemonTeam.name} borderWidth={1} borderColor={borderColor} minH='28' mb='4' borderRadius={'md'}>
 								<Flex h='10' alignItems={'center'} p='1.5' justifyContent={'space-between'}>
 									<Text>{pokemonTeam.name}</Text>
-									<Button h='full' onClick={() => dispatch({ type: 'deleteTeam', payload: { teamName: pokemonTeam.name } })}>Excluir</Button>
+									<Button h='full' borderWidth={1} borderColor={borderColor} onClick={() => dispatch({ type: 'deleteTeam', payload: { teamName: pokemonTeam.name } })}>Excluir</Button>
 								</Flex>
 								<Flex>
-									{pokemonTeam.pokemons.map((pokemon) => {
-										return (
-											<Image key={Date.now()} src={pokemon.sprite} boxSize={'16%'} onClick={() => {
-												setSelectedPokemon({ pokemon, team: pokemonTeam.name })
-												onOpen()
-											}}/>
-										)
-									})}
+									{pokemonTeam.pokemons.length
+										?  pokemonTeam.pokemons.map((pokemon) => {
+											return (
+												<Image key={Date.now()} src={pokemon.sprite} boxSize={'16%'} onClick={() => {
+													setSelectedPokemon({ pokemon, team: pokemonTeam.name })
+													onOpen()
+												}}/>
+											)
+										})
+										: <Center w={'full'} h={'full'} textAlign={'center'}>
+												Sem Pokemons aqui. Vá até a seção Pokemon para adicionar alguns.
+										</Center>}
 								</Flex>
 							</Box>
 						)

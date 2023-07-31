@@ -19,7 +19,7 @@ function Item({
 
 	return (
 		<ListItem borderBottomWidth={'1px'} borderBottomColor={text}>
-			<Link as={RouterLink} to={to} w={'full'} h='full' display={'inline-block'} pl='4' py='8' onClick={onClose}>{children}</Link>
+			<Link as={RouterLink} to={to} w={'full'} h='full' display={'inline-block'} pl='2' py='4' onClick={onClose}>{children}</Link>
 		</ListItem>
 	)
 }
