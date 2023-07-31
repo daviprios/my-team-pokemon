@@ -28,7 +28,7 @@ export default function PokemonList() {
 	const [selectedPokemon, setSelectedPokemon] = useState<Pokemon>({ id: '0', name: '', sprite: '' })
 	const borderColor = useMainColor('text')
 	const { state, dispatch } = usePokemonManagerContext()
-	const { register: registerTeam, getValues: getValuesTeam } = useForm<{ team: string }>()
+	const { register: registerTeam, getValues: getValuesTeam, setValue: setValuesTeam } = useForm<{ team: string }>()
 	const pokemonAutocompleteListRef = useRef<HTMLDataListElement>(null)
 	const [isSearchingSinglePokemon, setIsSearchingSinglePokemon] = useState(false)
 	const [pokemonAutocompleteList, setPokemonAutocompleteList] = useState<string[]>([])
@@ -62,7 +62,6 @@ export default function PokemonList() {
 	}, [])
 
 	useEffect(() => {
-		console.log('teams')
 		setPokemonTeams(Object.values(state))
 	}, [state])
 
@@ -151,6 +150,9 @@ export default function PokemonList() {
 					<ModalFooter px={4}>
 						<Flex justifyContent={'space-between'} w='full' flexShrink={1}>
 							<Select { ...registerTeam('team') } mr='2' isDisabled={isNoneTeamAvailable}>
+								<option value={''} disabled={true}>
+									-
+								</option>
 								{pokemonTeams.map((pokemonTeam) => (
 									<option key={pokemonTeam.name} value={pokemonTeam.name} disabled={pokemonTeam.pokemons.length >= 6}>
 										{pokemonTeam.name}
@@ -158,7 +160,9 @@ export default function PokemonList() {
 								))}
 							</Select>
 							<Button flexBasis={'550px'} onClick={() => {
+								if(!getValuesTeam().team) return
 								dispatch({ type: 'addPokemon', payload: { pokemon: selectedPokemon, teamName: getValuesTeam().team } })
+								setValuesTeam('team', '')
 								onClose()
 							}} isDisabled={isNoneTeamAvailable}>
 								{isNoneTeamAvailable ? 'Nenhum time livre' : `Adicionar ${selectedPokemon.name} ao time`}

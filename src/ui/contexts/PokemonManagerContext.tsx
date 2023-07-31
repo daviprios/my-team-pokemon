@@ -30,19 +30,19 @@ function reducer(state: PokemonTeamManager, action: Action): PokemonTeamManager 
 		if(!action.payload.teamName) return state
 		pokemonTeamHandler.createTeam(state, action.payload.teamName)
 		pokemonTeamHandler.storeTeams(state)
-		return { ...state }
+		return structuredClone(state)
 	case 'deleteTeam':
 		pokemonTeamHandler.deleteTeam(state, action.payload.teamName)
 		pokemonTeamHandler.storeTeams(state)
-		return { ...state }
+		return structuredClone(state)
 	case 'addPokemon':
 		pokemonTeamHandler.addPokemon(state, action.payload.teamName, action.payload.pokemon)
 		pokemonTeamHandler.storeTeams(state)
-		return { ...state }
+		return structuredClone(state)
 	case 'removePokemon':
 		pokemonTeamHandler.removePokemon(state, action.payload.teamName, action.payload.pokemon)
 		pokemonTeamHandler.storeTeams(state)
-		return { ...state }
+		return structuredClone(state)
 	default:
 		return state
 	}
