@@ -23,7 +23,7 @@ export default function Home() {
 			<Text id={'arrowStartAnchorRef'} mb='8'>Siga a seta para abrir o menu</Text>
 			<Flex px='4' flexDir={'column'} mb='4' textAlign={'center'} ref={arrowStartAnchorRef}>
 				<Text textAlign={'center'} mb='3'>
-					Tem duvida do que fazer? Vamos a um passo a passo simples:
+					Tem duvida do que fazer?
 				</Text>
 				<Text textAlign={'center'} mb='3'>
 					Crie um novo time pokemon (você pode criar vários) na seção {'"Meu Time"'}.
