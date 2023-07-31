@@ -8,6 +8,7 @@ import { pokemonHandler } from '@/domain/pokemon/app/pokemonHandler'
 import { Pokemon } from '@/domain/pokemon/core/models/Pokemon'
 import { usePokemonManagerContext } from '@/ui/contexts/PokemonManagerContext'
 import { PokemonTeam } from '@/domain/pokemonTeam/core/models/PokemonTeam'
+import { roundToNearestFloor } from '@/utils/roundToOneOf'
 
 interface FilterForm {
 	page: number
@@ -58,6 +59,9 @@ export default function PokemonList() {
 	const basicSearch = () => search({ limit: getValues().limit, page: getValues().page })
 
 	useEffect(() => {
+		const { width, height } = window.screen
+		setValue('limit', roundToNearestFloor(((width * height) / (200 * 200)), [10, 20, 50, 100]))
+
 		basicSearch()
 	}, [])
 
