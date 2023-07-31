@@ -10,11 +10,12 @@ import { usePokemonManagerContext } from '@/ui/contexts/PokemonManagerContext'
 export default function MyTeams() {
 	const { register, getValues } = useForm<{ teamName: string }>()
 	const { dispatch, state } = usePokemonManagerContext()
-	const borderColor = useMainColor('text')
 	const { isOpen, onOpen, onClose } = useDisclosure()
 	const [selectedPokemon, setSelectedPokemon] = useState<{ pokemon: Pokemon, team: string }>({ pokemon: { id: '0', name: '', sprite: '' }, team: '' })
-
+	
 	const imageBgColor = useColorModeValue('gray.300', 'gray.600')
+	const borderColor = useMainColor('text')
+	const baseColor = useMainColor('color')
 
 	return (
 		<Container maxW={'2xl'} mt='4'>
@@ -34,7 +35,7 @@ export default function MyTeams() {
 									<Text>{pokemonTeam.name}</Text>
 									<Button h='full' borderWidth={1} borderColor={borderColor} onClick={() => dispatch({ type: 'deleteTeam', payload: { teamName: pokemonTeam.name } })}>Excluir</Button>
 								</Flex>
-								<Flex px='1' justifyContent={'space-evenly'}>
+								<Flex px='1' pb='1.5' justifyContent={'space-evenly'}>
 									{pokemonTeam.pokemons.length
 										?  pokemonTeam.pokemons.map((pokemon, index) => {
 											return (
@@ -70,7 +71,7 @@ export default function MyTeams() {
 								dispatch({ type: 'removePokemon', payload: { pokemon: selectedPokemon.pokemon, teamName: selectedPokemon.team } })
 								onClose()
 							}}>
-								Retirar {selectedPokemon.pokemon.name} do time
+								Retirar <Text as='span' display={'inline-block'} _firstLetter={{ textTransform: 'uppercase' }} px='0.5ch' textColor={baseColor}>{selectedPokemon.pokemon.name}</Text> do time
 							</Button>
 						</Flex>
 					</ModalFooter>

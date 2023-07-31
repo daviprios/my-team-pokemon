@@ -46,6 +46,7 @@ export default function PokemonList() {
 		
 	const bgColor = useMainColor('bg')
 	const borderColor = useMainColor('text')
+	const baseColor = useMainColor('color')
 
 	const [scrollPosition, setScrollPosition] = useState(0)
 	const handleScroll = () => {
@@ -193,9 +194,6 @@ export default function PokemonList() {
 					<ModalFooter px={4}>
 						<Flex justifyContent={'space-between'} w='full' flexShrink={1}>
 							<Select { ...registerTeam('team') } mr='2' isDisabled={isNoneTeamAvailable}>
-								<option value={''} disabled={true}>
-									-
-								</option>
 								{pokemonTeams.map((pokemonTeam) => (
 									<option key={pokemonTeam.name} value={pokemonTeam.name} disabled={pokemonTeam.pokemons.length >= 6}>
 										{pokemonTeam.name}
@@ -205,10 +203,10 @@ export default function PokemonList() {
 							<Button flexBasis={'550px'} onClick={() => {
 								if(!getValuesTeam().team) return
 								dispatch({ type: 'addPokemon', payload: { pokemon: selectedPokemon, teamName: getValuesTeam().team } })
-								setValuesTeam('team', '')
+								setValuesTeam('team', pokemonTeams.find((team) => team.pokemons.length < 6)?.name ?? '')
 								onClose()
 							}} isDisabled={isNoneTeamAvailable}>
-								{isNoneTeamAvailable ? 'Nenhum time livre' : `Adicionar ${selectedPokemon.name} ao time`}
+								{isNoneTeamAvailable ? 'Nenhum time livre' : <>Adicionar {<Text as='span' display={'inline-block'} _firstLetter={{ textTransform: 'uppercase' }} px='0.5ch' color={baseColor}>{selectedPokemon.name}</Text>} ao time</>}
 							</Button>
 						</Flex>
 					</ModalFooter>
