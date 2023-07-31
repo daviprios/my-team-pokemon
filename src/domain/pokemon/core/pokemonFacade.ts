@@ -1,9 +1,17 @@
 import { Pokemon } from './models/Pokemon'
+import { FindAllPokemon } from './ports/incoming/findAllPokemon'
 import { FindManyPokemon } from './ports/incoming/findManyPokemon'
 import { FindUniquePokemon } from './ports/incoming/findUniquePokemon'
 import { PokemonHTTP } from './ports/outgoing/pokemonHTTP'
 
-export const pokemonFacade = (pokemonHTTP: PokemonHTTP): FindManyPokemon & FindUniquePokemon => ({
+export const pokemonFacade = (pokemonHTTP: PokemonHTTP): FindManyPokemon & FindUniquePokemon & FindAllPokemon => ({
+	findAllPokemon: async () => {
+		return await pokemonHTTP.findManyPokemon({
+			limit: 9999,
+			page: 1
+		})
+	},
+
 	findManyPokemon: async (filter: {
     limit: number
     page: number

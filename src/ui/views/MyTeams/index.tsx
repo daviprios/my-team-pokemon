@@ -34,9 +34,9 @@ export default function MyTeams() {
 								</Flex>
 								<Flex>
 									{pokemonTeam.pokemons.length
-										?  pokemonTeam.pokemons.map((pokemon) => {
+										?  pokemonTeam.pokemons.map((pokemon, index) => {
 											return (
-												<Image key={Date.now()} src={pokemon.sprite} boxSize={'16%'} onClick={() => {
+												<Image key={index} src={pokemon.sprite} boxSize={'16%'} onClick={() => {
 													setSelectedPokemon({ pokemon, team: pokemonTeam.name })
 													onOpen()
 												}}/>
